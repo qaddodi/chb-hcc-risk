@@ -92,7 +92,7 @@
   }
 
   .button:hover:not(:disabled) { transform: translateY(-1px); }
-  .button:focus-visible, .tab:focus-visible, summary:focus-visible {
+  .button:focus-visible, summary:focus-visible {
     outline: 3px solid rgba(13, 107, 101, 0.2);
     outline-offset: 2px;
   }
@@ -154,40 +154,11 @@
     box-shadow: var(--shadow);
   }
 
-  .tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 11px;
-    padding: 4px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--surface);
+  .result-section + .result-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
   }
-
-  .tab {
-    flex: 1;
-    min-height: 38px;
-    border: 0;
-    border-radius: 9px;
-    background: transparent;
-    color: var(--muted);
-    font-weight: 800;
-  }
-
-  .tab[aria-selected="true"] {
-    background: #fff;
-    color: var(--accent);
-    box-shadow: 0 1px 4px rgba(28, 43, 57, 0.12);
-  }
-
-  .tab small {
-    display: block;
-    margin-top: 1px;
-    font-size: 0.68rem;
-    font-weight: 600;
-  }
-
-  .tab-panel { padding: 0; }
 
   .workspace {
     display: grid;
@@ -567,18 +538,7 @@
       </section>
 
       <section class="results" aria-label="Calculated results">
-        <div class="tabs" role="tablist" aria-label="Result view">
-          <button class="tab" id="tabHbsag" type="button" role="tab" aria-selected="true" aria-controls="panelHbsag" tabindex="0">
-            HBsAg-HCC
-            <small>3-, 5-, and 7-year estimates</small>
-          </button>
-          <button class="tab" id="tabPageB" type="button" role="tab" aria-selected="false" aria-controls="panelPageB" tabindex="-1">
-            PAGE-B
-            <small>5-year risk category</small>
-          </button>
-        </div>
-
-        <section class="tab-panel" id="panelHbsag" role="tabpanel" aria-labelledby="tabHbsag">
+        <section class="result-section" id="panelHbsag" aria-labelledby="hbsagResultsHeading">
           <div class="panel-heading">
             <div>
               <h2 id="hbsagResultsHeading">HBsAg-HCC results</h2>
@@ -632,7 +592,7 @@
           </details>
         </section>
 
-        <section class="tab-panel" id="panelPageB" role="tabpanel" aria-labelledby="tabPageB" hidden>
+        <section class="result-section" id="panelPageB" aria-labelledby="pageBResultsHeading">
           <div class="panel-heading">
             <div>
               <h2 id="pageBResultsHeading">PAGE-B results</h2>
@@ -942,19 +902,6 @@
     });
   }
 
-  function activateTab(tabName, moveFocus = false) {
-    const isHbsag = tabName === "hbsag";
-    const hbsagTab = $("tabHbsag");
-    const pageBTab = $("tabPageB");
-    hbsagTab.setAttribute("aria-selected", String(isHbsag));
-    pageBTab.setAttribute("aria-selected", String(!isHbsag));
-    hbsagTab.tabIndex = isHbsag ? 0 : -1;
-    pageBTab.tabIndex = isHbsag ? -1 : 0;
-    $("panelHbsag").hidden = !isHbsag;
-    $("panelPageB").hidden = isHbsag;
-    if (moveFocus) (isHbsag ? hbsagTab : pageBTab).focus();
-  }
-
   function reset() {
     const defaults = {
       sex: "female",
@@ -975,7 +922,6 @@
     $("copyStatus").textContent = "";
     clearHbsagOutputs();
     clearPageBOutputs();
-    activateTab("hbsag");
   }
 
   function toggleCustomAstUln() {
@@ -1079,17 +1025,6 @@
   $("customAstUln").addEventListener("change", toggleCustomAstUln);
   $("reset").addEventListener("click", reset);
   $("copyResults").addEventListener("click", copyResults);
-  $("tabHbsag").addEventListener("click", () => activateTab("hbsag"));
-  $("tabPageB").addEventListener("click", () => activateTab("pageb"));
-
-  [$("tabHbsag"), $("tabPageB")].forEach(tab => {
-    tab.addEventListener("keydown", event => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-      event.preventDefault();
-      activateTab(tab.id === "tabHbsag" ? "pageb" : "hbsag", true);
-    });
-  });
-
   calculate();
 })();
 </script>
