@@ -157,14 +157,16 @@
   .tabs {
     display: flex;
     gap: 4px;
-    padding: 7px;
-    border-bottom: 1px solid var(--line);
+    margin-bottom: 11px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
     background: var(--surface);
   }
 
   .tab {
     flex: 1;
-    min-height: 43px;
+    min-height: 38px;
     border: 0;
     border-radius: 9px;
     background: transparent;
@@ -185,12 +187,13 @@
     font-weight: 600;
   }
 
-  .tab-panel { padding: 14px; }
+  .tab-panel { padding: 0; }
 
   .workspace {
     display: grid;
     grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
     gap: 14px;
+    padding: 14px;
   }
 
   .entry, .results {
@@ -304,6 +307,14 @@
   }
 
   .message.error { color: var(--danger); }
+
+  .entry-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+  }
+
+  .entry-status .message { margin-top: 7px; }
 
   .overview {
     display: grid;
@@ -452,7 +463,7 @@
     .copy-wrap .button { width: 100%; }
     .copy-wrap { justify-items: stretch; }
     .copy-status { text-align: center; }
-    .tab-panel { padding: 9px; }
+    .workspace { padding: 9px; }
     .entry, .results { padding: 11px; }
     .fields, .fields.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .field.full-mobile { grid-column: 1 / -1; }
@@ -485,94 +496,93 @@
     </div>
   </header>
 
-  <details class="notice">
-    <summary>Important: research-use approximation — review model limitations</summary>
-    <p>The HBsAg-HCC coefficients were reverse-engineered from the published rasterized nomogram, not obtained from the original model code, so small differences from the authors’ calculator are expected. The source figure’s last axis is labeled “7-year survival probability,” although its direction behaves like HCC probability. Verify against the paper or author-provided code before clinical use. These estimates do not replace guideline-based HCC surveillance or clinical judgment.</p>
-  </details>
-
   <main class="calculator">
-    <div class="tabs" role="tablist" aria-label="HCC risk calculator">
-      <button class="tab" id="tabHbsag" type="button" role="tab" aria-selected="true" aria-controls="panelHbsag" tabindex="0">
-        HBsAg-HCC
-        <small>3-, 5-, and 7-year estimates</small>
-      </button>
-      <button class="tab" id="tabPageB" type="button" role="tab" aria-selected="false" aria-controls="panelPageB" tabindex="-1">
-        PAGE-B
-        <small>5-year risk category</small>
-      </button>
-    </div>
+    <div class="workspace">
+      <section class="entry" aria-labelledby="patientInputsHeading">
+        <div class="panel-heading">
+          <div>
+            <h2 id="patientInputsHeading">Patient inputs</h2>
+            <p>One shared form calculates both HBsAg-HCC and PAGE-B.</p>
+          </div>
+        </div>
 
-    <section class="tab-panel" id="panelHbsag" role="tabpanel" aria-labelledby="tabHbsag">
-      <div class="workspace">
-        <section class="entry" aria-labelledby="hbsagInputsHeading">
-          <div class="panel-heading">
-            <div>
-              <h2 id="hbsagInputsHeading">Patient inputs</h2>
-              <p>All six variables are required.</p>
-            </div>
+        <div class="fields">
+          <div class="field">
+            <label for="patientSex">Sex</label>
+            <select id="patientSex" data-field="sex">
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+            </select>
           </div>
 
-          <div class="fields">
-            <div class="field">
-              <label for="hbsagSex">Sex</label>
-              <select id="hbsagSex" data-field="sex">
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="hbsagAge">Age, years</label>
-              <input id="hbsagAge" data-field="age" type="number" min="15" max="80" step="1" inputmode="numeric" placeholder="52">
-              <span class="hint">Model range: 15–80</span>
-            </div>
-
-            <div class="field">
-              <label for="albumin">Albumin</label>
-              <input id="albumin" data-field="albumin" type="number" min="0" step="0.1" inputmode="decimal" placeholder="3.8">
-            </div>
-
-            <div class="field">
-              <label for="albuminUnit">Albumin unit</label>
-              <select id="albuminUnit" data-field="albuminUnit">
-                <option value="gdl">g/dL</option>
-                <option value="gl">g/L</option>
-              </select>
-              <span class="hint">Low: &lt;4.0 g/dL or &lt;40 g/L</span>
-            </div>
-
-            <div class="field">
-              <label for="ast">AST, U/L</label>
-              <input id="ast" data-field="ast" type="number" min="0" step="0.1" inputmode="decimal" placeholder="42">
-            </div>
-
-            <div class="field">
-              <label for="astUln">AST ULN, U/L</label>
-              <input id="astUln" data-field="astUln" type="number" min="0.1" step="0.1" inputmode="decimal" value="40" disabled>
-              <label class="checkline" for="customAstUln">
-                <input id="customAstUln" type="checkbox">
-                Use custom ULN
-              </label>
-            </div>
-
-            <div class="field">
-              <label for="hbsagPlatelets">Platelets, ×10⁹/L</label>
-              <input id="hbsagPlatelets" data-field="platelets" type="number" min="1" step="1" inputmode="decimal" placeholder="145">
-            </div>
-
-            <div class="field">
-              <label for="quantHbsag">Quantitative HBsAg, IU/mL</label>
-              <input id="quantHbsag" data-field="hbsag" type="number" min="0" step="0.1" inputmode="decimal" placeholder="850">
-            </div>
+          <div class="field">
+            <label for="patientAge">Age, years</label>
+            <input id="patientAge" data-field="age" type="number" min="15" max="80" step="1" inputmode="numeric" placeholder="52">
+            <span class="hint">HBsAg-HCC: 15–80; PAGE-B: ≥16</span>
           </div>
-          <p class="message" id="hbsagMessage">Enter all HBsAg-HCC variables.</p>
-        </section>
 
-        <section class="results" aria-labelledby="hbsagResultsHeading">
+          <div class="field">
+            <label for="albumin">Albumin</label>
+            <input id="albumin" data-field="albumin" type="number" min="0" step="0.1" inputmode="decimal" placeholder="3.8">
+          </div>
+
+          <div class="field">
+            <label for="albuminUnit">Albumin unit</label>
+            <select id="albuminUnit" data-field="albuminUnit">
+              <option value="gdl">g/dL</option>
+              <option value="gl">g/L</option>
+            </select>
+            <span class="hint">Low: &lt;4.0 g/dL or &lt;40 g/L</span>
+          </div>
+
+          <div class="field">
+            <label for="ast">AST, U/L</label>
+            <input id="ast" data-field="ast" type="number" min="0" step="0.1" inputmode="decimal" placeholder="42">
+          </div>
+
+          <div class="field">
+            <label for="astUln">AST ULN, U/L</label>
+            <input id="astUln" data-field="astUln" type="number" min="0.1" step="0.1" inputmode="decimal" value="40" disabled>
+            <label class="checkline" for="customAstUln">
+              <input id="customAstUln" type="checkbox">
+              Use custom ULN
+            </label>
+          </div>
+
+          <div class="field">
+            <label for="platelets">Platelets, ×10⁹/L</label>
+            <input id="platelets" data-field="platelets" type="number" min="1" step="1" inputmode="decimal" placeholder="145">
+          </div>
+
+          <div class="field">
+            <label for="quantHbsag">Quantitative HBsAg, IU/mL</label>
+            <input id="quantHbsag" data-field="hbsag" type="number" min="0" step="0.1" inputmode="decimal" placeholder="850">
+          </div>
+        </div>
+
+        <div class="entry-status" aria-live="polite">
+          <p class="message" id="hbsagMessage">HBsAg-HCC: enter all variables.</p>
+          <p class="message" id="pageBMessage">PAGE-B: enter age and platelets.</p>
+        </div>
+      </section>
+
+      <section class="results" aria-label="Calculated results">
+        <div class="tabs" role="tablist" aria-label="Result view">
+          <button class="tab" id="tabHbsag" type="button" role="tab" aria-selected="true" aria-controls="panelHbsag" tabindex="0">
+            HBsAg-HCC
+            <small>3-, 5-, and 7-year estimates</small>
+          </button>
+          <button class="tab" id="tabPageB" type="button" role="tab" aria-selected="false" aria-controls="panelPageB" tabindex="-1">
+            PAGE-B
+            <small>5-year risk category</small>
+          </button>
+        </div>
+
+        <section class="tab-panel" id="panelHbsag" role="tabpanel" aria-labelledby="tabHbsag">
           <div class="panel-heading">
             <div>
               <h2 id="hbsagResultsHeading">HBsAg-HCC results</h2>
-              <p>Image-calibrated nomogram estimate</p>
+              <p>3-, 5-, and 7-year HCC risk estimates</p>
             </div>
             <span class="state" id="hbsagState">Awaiting inputs</span>
           </div>
@@ -586,7 +596,7 @@
             <div class="kpi">
               <span>Total nomogram points</span>
               <strong id="pointsOut">—</strong>
-              <span>Approximate</span>
+              <span>Nomogram score</span>
             </div>
           </div>
 
@@ -602,7 +612,7 @@
               <div class="bar" aria-hidden="true"><span id="bar5"></span></div>
             </div>
             <div class="risk-card">
-              <span>7-year figure output</span>
+              <span>7-year HCC probability</span>
               <strong id="risk7">—</strong>
               <div class="bar" aria-hidden="true"><span id="bar7"></span></div>
             </div>
@@ -621,40 +631,8 @@
             </table>
           </details>
         </section>
-      </div>
-    </section>
 
-    <section class="tab-panel" id="panelPageB" role="tabpanel" aria-labelledby="tabPageB" hidden>
-      <div class="workspace">
-        <section class="entry" aria-labelledby="pageBInputsHeading">
-          <div class="panel-heading">
-            <div>
-              <h2 id="pageBInputsHeading">Patient inputs</h2>
-              <p>Values shared with HBsAg-HCC stay synchronized.</p>
-            </div>
-          </div>
-
-          <div class="fields three">
-            <div class="field">
-              <label for="pageBSex">Sex</label>
-              <select id="pageBSex" data-field="sex">
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="pageBAge">Age, years</label>
-              <input id="pageBAge" data-field="age" type="number" min="16" step="1" inputmode="numeric" placeholder="52">
-            </div>
-            <div class="field full-mobile">
-              <label for="pageBPlatelets">Platelets, ×10⁹/L</label>
-              <input id="pageBPlatelets" data-field="platelets" type="number" min="1" step="1" inputmode="decimal" placeholder="145">
-            </div>
-          </div>
-          <p class="message" id="pageBMessage">Enter age and platelets.</p>
-        </section>
-
-        <section class="results" aria-labelledby="pageBResultsHeading">
+        <section class="tab-panel" id="panelPageB" role="tabpanel" aria-labelledby="tabPageB" hidden>
           <div class="panel-heading">
             <div>
               <h2 id="pageBResultsHeading">PAGE-B results</h2>
@@ -687,8 +665,8 @@
             </table>
           </details>
         </section>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 
   <footer class="references">
@@ -747,7 +725,7 @@
     node.classList.toggle("error", isError);
   }
 
-  function clearHbsagOutputs(message = "Enter all HBsAg-HCC variables.", isError = false) {
+  function clearHbsagOutputs(message = "HBsAg-HCC: enter all variables.", isError = false) {
     hbsagResult = null;
     ["apriOut", "pointsOut", "risk3", "risk5", "risk7",
       "sexPts", "albuminPts", "apriPts", "hbsagPts", "agePts"].forEach(id => $(id).textContent = "—");
@@ -758,7 +736,7 @@
     updateCopyAvailability();
   }
 
-  function clearPageBOutputs(message = "Enter age and platelets.", isError = false) {
+  function clearPageBOutputs(message = "PAGE-B: enter age and platelets.", isError = false) {
     pageBResult = null;
     ["pageBScore", "pageBRisk", "pageBIncidence",
       "pageBAgePts", "pageBSexPts", "pageBPlateletPts"].forEach(id => $(id).textContent = "—");
@@ -1031,9 +1009,9 @@
     if (hbsagResult) {
       lines.push(
         "",
-        "HBsAg-HCC (image-calibrated approximation):",
+        "HBsAg-HCC:",
         `APRI ${hbsagResult.apri.toFixed(3)} (category ${hbsagResult.apriLabel}); total nomogram points ${hbsagResult.total.toFixed(1)}.`,
-        `Estimated HCC probability: 3-year ${hbsagResult.risk3}; 5-year ${hbsagResult.risk5}; 7-year figure output ${hbsagResult.risk7}.`,
+        `Estimated HCC probability: 3-year ${hbsagResult.risk3}; 5-year ${hbsagResult.risk5}; 7-year ${hbsagResult.risk7}.`,
         `Point components: sex ${hbsagResult.sexPts.toFixed(1)}; hypoproteinemia ${hbsagResult.albuminPts.toFixed(1)} (${hbsagResult.hypo === "yes" ? "yes" : "no"}); APRI category ${hbsagResult.apriPts.toFixed(1)}; HBsAg category ${hbsagResult.hbsagPts.toFixed(1)}; age ${hbsagResult.agePts.toFixed(1)}.`
       );
     }
@@ -1054,9 +1032,7 @@
     if (pageBResult) {
       lines.push("Papatheodoridis G, et al. J Hepatol. 2016;64(4):800-806. PMID: 26678008.");
     }
-    if (hbsagResult) {
-      lines.push("", "Note: HBsAg-HCC coefficients in this tool were reverse-engineered from the published nomogram image and may differ from the authors' calculator. Use with clinical judgment; do not alter guideline-based HCC surveillance solely from this estimate.");
-    }
+    lines.push("", "Note: Use with clinical judgment; do not alter guideline-based HCC surveillance solely from these estimates.");
 
     return lines.join("\n");
   }
